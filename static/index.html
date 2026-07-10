@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Step Verification Agent</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="panel">
+      <h1>Math Step Verification Agent</h1>
+      <p class="subtitle">
+        Verify incomplete calculus steps using a symbolic math tool instead of guessing.
+      </p>
+
+      <div class="tabs">
+        <button id="textTab" class="active">Text Input</button>
+        <button id="imageTab">Image Upload</button>
+      </div>
+
+      <section id="textSection">
+        <label>Problem Type</label>
+        <select id="problemType">
+          <option value="integration">Integration</option>
+          <option value="differentiation">Differentiation</option>
+        </select>
+
+        <label>Original Expression</label>
+        <input id="originalExpression" placeholder="Example: x**2*sin(x)" />
+
+        <label>Partial Work</label>
+        <textarea id="partialWork" placeholder="Example: I got stuck at remaining expression: 2*x*cos(x)"></textarea>
+
+        <label>Remaining Expression</label>
+        <input id="remainingExpression" placeholder="Example: 2*x*cos(x)" />
+
+        <button id="verifyTextBtn" class="primary">Verify Text Work</button>
+      </section>
+
+      <section id="imageSection" class="hidden">
+        <label>Problem Type</label>
+        <select id="imageProblemType">
+          <option value="integration">Integration</option>
+          <option value="differentiation">Differentiation</option>
+        </select>
+
+        <label>Upload Math Work Image</label>
+        <input id="imageInput" type="file" accept="image/*" />
+
+        <button id="verifyImageBtn" class="primary">Verify Image Work</button>
+      </section>
+    </section>
+
+    <section class="result">
+      <h2>Result</h2>
+
+      <div id="status" class="status">Waiting for input...</div>
+
+      <div class="grid">
+        <div>
+          <span>Verified</span>
+          <strong id="verified">-</strong>
+        </div>
+
+        <div>
+          <span>Extracted Expression</span>
+          <strong id="extracted">-</strong>
+        </div>
+
+        <div>
+          <span>Tool Result</span>
+          <strong id="toolResult">-</strong>
+        </div>
+      </div>
+
+      <h3>Final Answer</h3>
+      <p id="finalAnswer">Submit text or an image to see the verified result.</p>
+
+      <h3>Explanation</h3>
+      <p id="explanation">The backend will show how the expression was handled.</p>
+    </section>
+  </main>
+
+  <script src="/static/script.js?v=5"></script>
+</body>
+</html>
