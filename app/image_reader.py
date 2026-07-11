@@ -1,10 +1,27 @@
+
+
 import base64
 import json
 import os
+import re
 from dotenv import load_dotenv
 from google import genai
 
 load_dotenv()
+
+
+def clean_json_response(text: str) -> str:
+    cleaned = text.strip()
+
+    cleaned = cleaned.replace("```json", "")
+    cleaned = cleaned.replace("```", "")
+    cleaned = cleaned.strip()
+
+    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+    if match:
+        return match.group(0)
+
+    return cleaned
 
 
 def extract_math_from_image(image_bytes: bytes, mime_type: str) -> dict:
@@ -19,43 +36,46 @@ def extract_math_from_image(image_bytes: bytes, mime_type: str) -> dict:
     prompt = """
 You are reading a photo of a partially solved math problem.
 
-Extract the math into JSON only.
+Extract the math into valid JSON only.
 
 Return exactly this JSON shape:
 {
-  "problem_type": "integration" or "differentiation",
+  "problem_type": "integration",
   "original_expression": "Python/SymPy style original expression",
   "partial_work": "short transcription of visible student work",
-  "remaining_expression": "only the expression that still needs integration or differentiation, not Integral(...)",
-  "variable": "the variable of the remaining expression",
-  "substitution": "substitution used by the student, or null"
+  "remaining_expression": "only the expression that still needs solving, not Integral(...)",
+  "variable": "x",
+  "substitution": null
 }
 
 Rules:
+- Return raw JSON only.
+- Do not wrap the JSON in markdown.
+- Do not use ```json.
 - Use ** for powers, not ^.
-- Use atan(...) instead of arctan(...).
-- Use log(...) instead of ln(...).
-- If the work shows I = (1/3) integral du/u, return remaining_expression as 1/(3*u), variable as u.
-- If the work uses u = atan(x**3 + 1/x**3), return substitution as u=atan(x**3 + 1/x**3).
-- Do not include markdown.
-- Do not include extra explanation.
+- Use exp(x), sin(x), cos(x), tan(x), log(x), atan(x).
+- remaining_expression must be a plain SymPy expression, not an equation and not Integral(...).
+- If the image shows the last unresolved integral, extract only its integrand.
+- If unsure, choose the simplest remaining expression visible.
 """
 
-    interaction = client.interactions.create(
+    response = client.models.generate_content(
         model=model,
-        input=[
-            {"type": "text", "text": prompt},
+        contents=[
             {
-                "type": "image",
-                "data": base64.b64encode(image_bytes).decode("utf-8"),
-                "mime_type": mime_type,
+                "inline_data": {
+                    "mime_type": mime_type,
+                    "data": base64.b64encode(image_bytes).decode("utf-8"),
+                }
             },
+            prompt,
         ],
     )
 
-    raw_text = interaction.output_text.strip()
+    raw_text = response.text.strip()
+    cleaned_text = clean_json_response(raw_text)
 
     try:
-        return json.loads(raw_text)
+        return json.loads(cleaned_text)
     except json.JSONDecodeError as exc:
-        raise ValueError(f"Gemini did not return valid JSON: {raw_text}") from exc
+        raise ValueError(f"Gemini did not return valid JSON after cleanup: {cleaned_text}") from exc

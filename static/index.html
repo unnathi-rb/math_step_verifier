@@ -3,85 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Math Step Verification Agent</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <title>NextStep</title>
+  <link rel="stylesheet" href="/static/style.css?v=13" />
 </head>
 <body>
-  <main class="app">
-    <section class="panel">
-      <h1>Math Step Verification Agent</h1>
-      <p class="subtitle">
-        Verify incomplete calculus steps using a symbolic math tool instead of guessing.
+  <header class="topbar">
+    <div class="topbar-inner">
+      <p class="brand-mark">NextStep</p>
+      <p class="tagline">Your unfinished math, continued.</p>
+      <p class="topbar-copy">
+        Upload or type the step where you got stuck. NextStep continues the calculation with SymPy.
       </p>
+    </div>
+  </header>
 
+  <main class="app">
+    <section class="workspace">
       <div class="tabs">
-        <button id="textTab" class="active">Text Input</button>
-        <button id="imageTab">Image Upload</button>
+        <button id="textTab" class="active">Type work</button>
+        <button id="imageTab">Upload image</button>
       </div>
 
       <section id="textSection">
-        <label>Problem Type</label>
+        <label>Problem type</label>
         <select id="problemType">
           <option value="integration">Integration</option>
           <option value="differentiation">Differentiation</option>
         </select>
 
-        <label>Original Expression</label>
+        <label>Original expression</label>
         <input id="originalExpression" placeholder="Example: x**2*sin(x)" />
 
-        <label>Partial Work</label>
+        <label>Partial work</label>
         <textarea id="partialWork" placeholder="Example: I got stuck at remaining expression: 2*x*cos(x)"></textarea>
 
-        <label>Remaining Expression</label>
+        <label>Remaining expression</label>
         <input id="remainingExpression" placeholder="Example: 2*x*cos(x)" />
 
-        <button id="verifyTextBtn" class="primary">Verify Text Work</button>
+        <button id="verifyTextBtn" class="primary">Verify text work</button>
       </section>
 
       <section id="imageSection" class="hidden">
-        <label>Problem Type</label>
+        <label>Problem type</label>
         <select id="imageProblemType">
           <option value="integration">Integration</option>
           <option value="differentiation">Differentiation</option>
         </select>
 
-        <label>Upload Math Work Image</label>
-        <input id="imageInput" type="file" accept="image/*" />
+        <label>Photo of your work</label>
+        <div id="dropZone" class="drop-zone">
+          <input id="imageInput" type="file" accept="image/*" />
+          <div>
+            <strong>Choose an image</strong>
+            <p>JPEG or PNG, up to 5MB</p>
+            <span id="fileName">No file selected</span>
+          </div>
+        </div>
 
-        <button id="verifyImageBtn" class="primary">Verify Image Work</button>
+        <button id="verifyImageBtn" class="primary">Verify image work</button>
       </section>
     </section>
 
     <section class="result">
-      <h2>Result</h2>
-
-      <div id="status" class="status">Waiting for input...</div>
-
-      <div class="grid">
-        <div>
-          <span>Verified</span>
-          <strong id="verified">-</strong>
-        </div>
-
-        <div>
-          <span>Extracted Expression</span>
-          <strong id="extracted">-</strong>
-        </div>
-
-        <div>
-          <span>Tool Result</span>
-          <strong id="toolResult">-</strong>
-        </div>
+      <div class="result-header">
+        <span id="statusPill" class="status-pill idle">Ready</span>
+        <h2>Answer</h2>
       </div>
 
-      <h3>Final Answer</h3>
-      <p id="finalAnswer">Submit text or an image to see the verified result.</p>
+      <div class="answer-box answer-main">
+        <h3>Final answer</h3>
+        <p id="finalAnswer">Submit text or an image to see the verified result.</p>
+      </div>
 
-      <h3>Explanation</h3>
-      <p id="explanation">The backend will show how the expression was handled.</p>
+      <div class="answer-box">
+        <h3>How NextStep continued it</h3>
+        <p id="explanation">The explanation will appear here.</p>
+      </div>
+
+      <button id="toggleStepsBtn" class="secondary hidden">See how NextStep solved it</button>
+
+      <div id="stepsBox" class="steps hidden">
+        <h3>Detailed steps</h3>
+        <ol id="stepsList"></ol>
+      </div>
+
+      <div class="hidden">
+        <span id="verified">-</span>
+        <span id="extracted">-</span>
+        <span id="toolResult">-</span>
+      </div>
     </section>
   </main>
 
-  <script src="/static/script.js?v=5"></script>
+  <script src="/static/script.js?v=13"></script>
 </body>
 </html>

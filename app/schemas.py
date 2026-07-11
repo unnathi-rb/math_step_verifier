@@ -20,3 +20,4 @@ class MathStepResponse(BaseModel):
     explanation: str
     detected_text: str | None = None
     substitution: str | None = None
+    steps: list[str] = []
